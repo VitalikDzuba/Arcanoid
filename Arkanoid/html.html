@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Vetal Arkanoid</title>
+<script src = "java.js"></script>
+   <script src="jquery-1.5.2.min.js"></script>
+<link href="http://www.igames.com.ua/favicon.ico" rel="shortcut icon" />
+<style>
+canvas{
+	border: 1px solid silver;
+//	margin-left: 20%;
+}
+.btn1{
+	position: absolute;
+	z-index: 100;
+	background: orange;
+	border: 1px solid silver;
+	width: 130px;
+	height: 40px;
+	font-size: 20px;
+	left: 400px;
+	margin-left: -65px;
+	top: 250px;
+}
+.btn2{
+	position: absolute;
+	z-index: 100;
+	background: orange;
+	border: 1px solid silver;
+	width: 130px;
+	height: 40px;
+	font-size: 20px;
+	left: 400px;
+	margin-left: -65px;
+	top: 290px;
+	
+}
+.btn3{
+	position: absolute;
+	z-index: 100;
+	background: red;
+	border: 1px solid silver;
+	width: 100px;
+	height: 40px;
+	font-size: 20px;
+	left: 75px;
+	margin-left: -65px;
+	top: 10px;
+	opacity: 0.3;
+}
+.btn4{
+	position: absolute;
+	z-index: 100;
+	background: orange;
+	border: 1px solid silver;
+	width: 130px;
+	height: 40px;
+	font-size: 20px;
+	left: 400px;
+	margin-left: -65px;
+	top: 330px;
+}.btn5{
+	position: absolute;
+	z-index: 100;
+	background: orange;
+	border: 1px solid silver;
+	width: 130px;
+	height: 40px;
+	font-size: 20px;
+	left: 400px;
+	margin-left: -65px;
+	top: 210px;
+}
+.btn6{
+	position: absolute;
+	z-index: 100;
+	background: orange;
+	border: 1px solid silver;
+	width: 130px;
+	height: 40px;
+	font-size: 20px;
+	left: 400px;
+	margin-left: -65px;
+	top: 320px;
+}
+</style>
+</head>
+<body>
+<input id = "btn1" type = "button" value = "Start game" class = "btn1" onclick = "init()"/>
+<input id = "btn2" type = "button" value = "Mute on/off" class = "btn2" onclick = "VolumeGame()"/>
+<input id = "btn3" type = "button" value = "Pause" class = "btn3" onclick = "pause()"/>
+<input id = "btn4" type = "button" value = "Help" class = "btn4" onclick = "help()"/>
+<input id = "btn5" type = "button" value = "Continue" class = "btn5" onclick = "gameContinue()"/>
+<input id = "btn6" type = "button" value = "TryAgain" class = "btn6" onclick = "init()"/>
+<canvas id = "canvas" width = "800" height = "600"></canvas>
+</body>
+</html>
