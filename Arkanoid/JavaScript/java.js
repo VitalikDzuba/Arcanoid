@@ -9,14 +9,14 @@ var colors;
 var color =["orange","orange","orange","lightblue","violet","red"];
 var row_len = 6;
 var col_len = 20;
-var start = new Audio("music/start.wav");
-var end  = new Audio("music/end.wav");
-var block_sound = new Audio("music/block.wav");
-var platforma_sound = new Audio("music/platforma.wav");
+var start = new Audio("Music/start.wav");
+var end  = new Audio("Music/end.wav");
+var block_sound = new Audio("Music/block.wav");
+var platforma_sound = new Audio("Music/platforma.wav");
 var bounes;
 var bounceChangeWidthPlatforma = 1;
 var win = false;
-var win_sound  = new Audio("music/win.wav");
+var win_sound  = new Audio("Music/win.wav");
 var soundDetector = true;
 var gamePause = false;
 var ballImg = new Image();
@@ -338,7 +338,7 @@ function gameover(){
 	document.getElementById("btn6").style.display = "block"; 
 }
 function Images(){
-    ballImg.src = 'ball.png';
+    ballImg.src = 'Pictures/ball.png';
 	
 }
 function background(value){
@@ -357,7 +357,7 @@ function background(value){
 		default:
 		break;
 	}
-	bg.src = "picture/bg.jpg";
+	bg.src = "Pictures/bg.jpg";
 	ctx.drawImage(bg,0,0,w,h);
 }
 
