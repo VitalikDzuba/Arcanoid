@@ -6,9 +6,9 @@ var rowHeight, row, col;
 var toLeft = true, toRight = true;
 var score = 0;
 var colors;
-var color =["orange","orange","orange","lightblue","violet","red"];
-var row_len = 6;
-var col_len = 20;
+var color =["black","white","grey","black","white","grey"];
+var row_len = 7;
+var col_len = 10;
 var start = new Audio("Music/start.wav");
 var end  = new Audio("Music/end.wav");
 var block_sound = new Audio("Music/block.wav");
@@ -20,24 +20,25 @@ var win_sound  = new Audio("Music/win.wav");
 var soundDetector = true;
 var gamePause = false;
 var ballImg = new Image();
+var padImg = new Image();
+var padImg1 = new Image();
 
 var BALL = function(x,y,img){
 	this.x = x;
 	this.y = y;
 	this.img = img;
-	
-	this.color = "red";
+    
 	this.radius = 5;
-	//this.saveRadius = 5;
 	this.vx = 3;
 	this.vy = -4;
 	
 	this.ay = 0;
 }
-var PLATFORMA = function(x,y){
+var PLATFORMA = function(x,y,img){
 	this.x = x;
 	this.y = y;
-	
+	this.img = img;
+    
 	this.color = "white";
 	this.width = 140;
 	this.saveWidth = 140; // збереження оригінального розміру
@@ -91,7 +92,8 @@ function init(){
 	ctx.font = "30px Arial";
 	Images();
 	ball = new BALL(w/2,h/2+50,ballImg);
-	platforma = new PLATFORMA(w/2,h-20);
+	platforma = new PLATFORMA(w/2,h-20,padImg);
+    platform = new PLATFORMA(w/4, h-20, padImg1);
 	platforma.x -= platforma.width/2;
 	
 	blocks = new BLOCKS((w/20)-2,20,row_len,col_len);
@@ -118,7 +120,7 @@ function init(){
 	}
 	
 	for(var j = 0;j<blocks.cols;++j){
-		blocks.lifes[blocks.rows-1][j] = 2;
+		blocks.lifes[blocks.rows-1][j] = 1;
 	}
 	
 	//document.addEventListener("keypress", function(event){
@@ -170,6 +172,7 @@ function beginGame(){
 			ctx.clearRect(0,0,w,h);
 			background();
 			ctx.drawImage(ball.img, ball.x, ball.y);
+            ctx.drawImage(platforma.img, platforma.x, platforma.y+4);
 			if (ball.ay == 0){
 			ball.x += ball.vx;
 			ball.y += ball.vy;
@@ -180,7 +183,7 @@ function beginGame(){
 			}
 			
 			var tmpScore = "Score: " +score;
-			ctx.strokeStyle = "red";
+			ctx.strokeStyle = "grey";
 			ctx.strokeText(tmpScore,20,h/2);
 
 			
@@ -218,7 +221,7 @@ function beginGame(){
 			if (ball.y < blocks.rows*rowHeight && row>=0 && col>=0 && blocks.obj[row][col] == 1){
 				if (blocks.lifes[row][col]>1){
 					blocks.lifes[row][col] -=1;
-					colors[row][col] = "darkred";
+					colors[row][col] = "grey";
 				}
 				else
 				{
@@ -228,6 +231,9 @@ function beginGame(){
 				if (bounes[row][col] == 4 && bounceChangeWidthPlatforma>0){
 					bounes[row][col] = 0;
 					platforma.width = platforma.width/2;
+                    
+				    requestAnimationFrame(beginGame);
+                    ctx.drawImage(platform.img, platform.x, platform.y);
 					bounceChangeWidthPlatforma--;
 					setTimeout(function(){
 						platforma.width = platforma.saveWidth;
@@ -262,22 +268,21 @@ function beginGame(){
 			ctx.beginPath();
 			ctx.arc(ball.x,ball.y,ball.radius,0,2*Math.PI,true);
 			ctx.closePath();
-			ctx.fill();*/
-
+			ctx.fill();
 			ctx.fillStyle = platforma.color;
 			ctx.beginPath();
 			ctx.fillRect(platforma.x,platforma.y,platforma.width,platforma.height);
 			ctx.closePath();
-			
+			*/
 			//ctx.fillStyle = "orange";
-			ctx.strokeStyle = "red";
+			ctx.strokeStyle = "white";
 			
-			for (var i = 0; i<blocks.rows; ++i){	
+			for (var i = 0; i<7; ++i){	
 			//	ctx.fillStyle = color[i];
 			//	ctx.fillStyle = colors[i][i];
 				for (var j = 0;j<blocks.cols; ++j){	
 					ctx.fillStyle = colors[i][j];
-					blocks.obj[1][1] = 0;
+					blocks.obj[4][1] = blocks.obj[3][2] = blocks.obj[3][4] = 0 ; 
 					if (blocks.obj[i][j] == 1){
 		//				ctx.fillStyle = colors[i][j];
 						ctx.beginPath();
@@ -293,6 +298,9 @@ function beginGame(){
 			//window.webkitRequestAnimationFrame(beginGame);
 			//if (!gamePause){
 				requestAnimationFrame(beginGame);
+                
+                    
+                
 		//	}
 		}
 		//window.oRequestAnimationFrame(beginGame);
@@ -339,6 +347,8 @@ function gameover(){
 }
 function Images(){
     ballImg.src = 'Pictures/ball.png';
+    padImg.src = 'Pictures/padd.png';
+    padImg1.src = 'Pictures/padd1.png';
 	
 }
 function background(value){
@@ -357,7 +367,7 @@ function background(value){
 		default:
 		break;
 	}
-	bg.src = "Pictures/bg.jpg";
+	bg.src = "Pictures/bg2.jpg";
 	ctx.drawImage(bg,0,0,w,h);
 }
 
