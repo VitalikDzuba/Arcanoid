@@ -6,9 +6,9 @@ var rowHeight, row, col;
 var toLeft = true, toRight = true;
 var score = 0;
 var colors;
-var color =["black","white","grey","black","white","grey"];
+var color =["white","grey","grey","black","grey","grey","white"];
 var row_len = 7;
-var col_len = 10;
+var col_len = 20;
 var start = new Audio("Music/start.wav");
 var end  = new Audio("Music/end.wav");
 var block_sound = new Audio("Music/block.wav");
@@ -22,6 +22,7 @@ var gamePause = false;
 var ballImg = new Image();
 var padImg = new Image();
 var padImg1 = new Image();
+var life = 3;
 
 var BALL = function(x,y,img){
 	this.x = x;
@@ -68,7 +69,8 @@ function opacityButton(){
 
 document.addEventListener('mousemove', function(event){
 	var x = event.offsetX;
-	platforma.x = x-platforma.width/2; 
+		platforma.x = x-platforma.width/2; 
+	
 });
 
 
@@ -89,18 +91,15 @@ function init(){
 	w = canvas.width;
 	h = canvas.height;
 	ctx = canvas.getContext('2d');
-	ctx.font = "30px Arial";
+	ctx.font = "30px Times New Roman";
 	Images();
 	ball = new BALL(w/2,h/2+50,ballImg);
 	platforma = new PLATFORMA(w/2,h-20,padImg);
-    platform = new PLATFORMA(w/4, h-20, padImg1);
+
 	platforma.x -= platforma.width/2;
 	
 	blocks = new BLOCKS((w/20)-2,20,row_len,col_len);
 	
-	//ctx.drawImage(ball.img, ball.x, ball.y);
-	
-//	fewBalls = [];
 	blocks.obj = [];
 	colors = [];
 	bounes = []
@@ -120,13 +119,16 @@ function init(){
 	}
 	
 	for(var j = 0;j<blocks.cols;++j){
-		blocks.lifes[blocks.rows-1][j] = 1;
+		blocks.lifes[blocks.rows-2][j] = 2;
+		blocks.lifes[blocks.rows-3][j] = 2;
+		blocks.lifes[blocks.rows-5][j] = 2;
+		blocks.lifes[blocks.rows-6][j] = 2;
 	}
-	
-	//document.addEventListener("keypress", function(event){
-
-//}, false);
-	$(window).keydown(function(event){
+	for(var j = 0;j<blocks.cols;++j){
+		blocks.lifes[blocks.rows-4][j] = 100;
+    }
+    
+$(window).keydown(function(event){
 	if(event.keyCode == 37){
 		toLeft = true;
 		toRight = false;
@@ -144,7 +146,7 @@ function init(){
 	}
 });
 
-	$(window).keyup(function(event){
+$(window).keyup(function(event){
 	if(event.keyCode == 37){
 		toLeft = false;
 		toRight = false;
@@ -154,12 +156,12 @@ function init(){
 		toRight = false;
 	}
 	else if (event.keyCode == 40){
-		toLeft = false;
-		toRight = false;
+	   beginGame();
 	}
 	else if (event.keyCode == 27){
 		pause();
 	}
+    
 });
 	
 	beginGame();
@@ -182,7 +184,7 @@ function beginGame(){
 			ball.y += ball.vy * 2.5;
 			}
 			
-			var tmpScore = "Score: " +score;
+			var tmpScore = "Рахунок: " +score;
 			ctx.strokeStyle = "grey";
 			ctx.strokeText(tmpScore,20,h/2);
 
@@ -194,14 +196,21 @@ function beginGame(){
 				ball.vy = -ball.vy
 			} else if ((ball.y+ball.radius+ball.vy)>=(h-platforma.height-10) && (ball.y+ball.radius)+ball.vy<h){
 				if(ball.x+ball.radius>=platforma.x && ball.x+ball.radius<=(platforma.x+platforma.width)){
-	//				platforma_sound.volume = 0.3;
 					platforma_sound.play();
 					ball.vy = -ball.vy;
 					ball.vx = 10*((ball.x-(platforma.x+platforma.width/2)))/platforma.width; // фізика при відбитті під крутим кутом
 				}
 				else
 				{
-					game = false;
+						life -= 1;
+						delete ball;
+						ball = new BALL(w/2,h/2+50,ballImg);
+						ctx.drawImage(ball.img, ball.x, ball.y);
+						if (life == 0)
+						{
+							game = false;
+							life = 3;
+						}
 				}
 			}
 			
@@ -218,11 +227,13 @@ function beginGame(){
 			
 			var example = ball.y - ball.radius;
 			
-			if (ball.y < blocks.rows*rowHeight && row>=0 && col>=0 && blocks.obj[row][col] == 1){
+			if (ball.y< blocks.rows*rowHeight && row>=0 && col>=0 && blocks.obj[row][col] == 1){
 				if (blocks.lifes[row][col]>1){
 					blocks.lifes[row][col] -=1;
-					colors[row][col] = "grey";
-				}
+                    if (blocks.lifes[row][col] ==1){
+					colors[row][col] = "White";
+			     	}
+                }
 				else
 				{
 					blocks.obj[row][col] = 0;
@@ -230,28 +241,28 @@ function beginGame(){
 
 				if (bounes[row][col] == 4 && bounceChangeWidthPlatforma>0){
 					bounes[row][col] = 0;
+					delete platforma;
+					platforma = new PLATFORMA(platforma.x,h-20,padImg1);
 					platforma.width = platforma.width/2;
-                    
-				    requestAnimationFrame(beginGame);
-                    ctx.drawImage(platform.img, platform.x, platform.y);
+                    ctx.drawImage(platforma.img, platforma.x+platforma.width/2, platforma.y+4);
 					bounceChangeWidthPlatforma--;
 					setTimeout(function(){
 						platforma.width = platforma.saveWidth;
 						bounceChangeWidthPlatforma = 1;
-					}, 5000);////////////////////////////////////////////////////////
+						delete platforma;
+						platforma = new PLATFORMA(platforma.x,h-20,padImg);
+						ctx.drawImage(platforma.img, platforma.x, platforma.y);
+					}, 5000);
 				}
 				if (bounes[row][col] == 2){
-					ball.ay = 1;
+						ball.ay = 1;
 					bounes[row][col] = 0;
 					setTimeout(function(){
 						ball.ay = 0;
-					}, 10000);
+					}, 5000);
 					}
 				}
-				//blocks.obj[row][col] = 0;
 				ball.vy = -ball.vy;
-				//score++;
-		//		block_sound.volume = 0.3;
 				block_sound.play();
 				
 				if (score == row_len*col_len){
@@ -259,51 +270,32 @@ function beginGame(){
 					win = true;
 				} 
 				else
-				{
+				{	
 						win = false;
 				}
 			}
-				
-		/*	ctx.fillStyle = ball.color;
-			ctx.beginPath();
-			ctx.arc(ball.x,ball.y,ball.radius,0,2*Math.PI,true);
-			ctx.closePath();
-			ctx.fill();
-			ctx.fillStyle = platforma.color;
-			ctx.beginPath();
-			ctx.fillRect(platforma.x,platforma.y,platforma.width,platforma.height);
-			ctx.closePath();
-			*/
-			//ctx.fillStyle = "orange";
 			ctx.strokeStyle = "white";
 			
 			for (var i = 0; i<7; ++i){	
-			//	ctx.fillStyle = color[i];
-			//	ctx.fillStyle = colors[i][i];
 				for (var j = 0;j<blocks.cols; ++j){	
 					ctx.fillStyle = colors[i][j];
-					blocks.obj[4][1] = blocks.obj[3][2] = blocks.obj[3][4] = 0 ; 
-					if (blocks.obj[i][j] == 1){
-		//				ctx.fillStyle = colors[i][j];
+                    if ((i+j-1)<3) blocks.obj[i][j] = 0;
+                    blocks.obj[i][0] = blocks.obj[i][19] =0;
+                    blocks.obj[3][j*2-18] = 0;
+					blocks.obj[6][2] =blocks.obj[5][1] = blocks.obj[6][1]= 0;
+                    blocks.obj[4][1] =blocks.obj[5][2] =blocks.obj[6][3] =blocks.obj[0][18] =blocks.obj[1][18] =blocks.obj[2][18] =blocks.obj[4][18] =blocks.obj[5][18] =0;
+                    blocks.obj[6][18] =blocks.obj[0][17] =blocks.obj[1][17] =blocks.obj[5][17] =blocks.obj[6][17] =blocks.obj[6][16] =blocks.obj[0][16] =blocks.obj[0][16] =0;
+                 					if (blocks.obj[i][j] == 1){
 						ctx.beginPath();
 						ctx.rect(j*(blocks.width+blocks.padding),i*(blocks.height+blocks.padding), blocks.width, blocks.height);
-	//					ctx.strokeRect(j*(blocks.width+blocks.padding),i*(blocks.height+blocks.padding), blocks.width, blocks.height);
 						ctx.closePath();
 						ctx.fill();
 						ctx.stroke();
 					}
 				}
 			}
-			
-			//window.webkitRequestAnimationFrame(beginGame);
-			//if (!gamePause){
 				requestAnimationFrame(beginGame);
-                
-                    
-                
-		//	}
 		}
-		//window.oRequestAnimationFrame(beginGame);
 	}
 	else if (!win)	
 	{
@@ -317,8 +309,8 @@ function beginGame(){
 function gamewin(){
 	win_sound.volume = 0.7;
 	win_sound.play();
-	var text = "Game Win!";
-	var text2 = "Score: "+score;
+	var text = "Вітаю!";
+	var text2 = "Рахунок: "+score;
 	ctx.clearRect(0,0,w,h);
 	background();
 	ctx.fillStyle = "white";
@@ -332,10 +324,9 @@ function gamewin(){
 }
 
 function gameover(){
-//	end.volume = 0.7;
 	end.play();
-	var text = "Game Over";
-	var text2 = "Score: "+score;
+	var text = "Кінець гри!";
+	var text2 = "Рахунок: "+score;
 	ctx.clearRect(0,0,w,h);
 	background();
 	ctx.fillStyle = "white";
@@ -386,25 +377,26 @@ window.requestAnimationFrame = (function() {
 })();
 
 function VolumeGame(){
-	if (soundDetector){
-		start.volume = 0;
-		end.volume = 0;
-		block_sound.volume = 0;
-		platforma_sound.volume = 0;
-		win_sound.volume = 0;
-		soundDetector = false;
-	} 
-	else
-	{
-		start.volume = 0.3;
-		end.volume = 0.3;
-		block_sound.volume = 0.3;
-		platforma_sound.volume = 0.3;
-		win_sound.volume = 0.3;
-		soundDetector = true;
-	}
+ if (soundDetector){    
+    start.volume = 0;
+    end.volume = 0;
+    block_sound.volume = 0;
+    platforma_sound.volume = 0;
+    win_sound.volume = 0;
+    soundDetector = false;
+    document.getElementById("btn2").value='Увімкнути звуки';
+ } 
+ else
+ {
+     start.volume = 0.3;
+     end.volume = 0.3;
+     block_sound.volume = 0.3;
+     platforma_sound.volume = 0.3;
+     win_sound.volume = 0.3;
+     soundDetector = true;
+     document.getElementById("btn2").value='Вимкнути звуки';
+ }
 }
-
 function pause(){
 	if (!gamePause){
 		gamePause = true;
@@ -416,7 +408,6 @@ function pause(){
 		document.getElementById("btn4").style.display = "block";
 		document.getElementById("btn5").style.display = "block";
 		document.getElementById("btn6").style.display = "none";
-		
 	}
 } 
 function gameContinue()
@@ -430,3 +421,4 @@ function gameContinue()
 	
 	
 }
+
